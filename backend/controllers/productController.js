@@ -30,43 +30,79 @@ const createProduct = async (req, res) => {
       return res.status(400).json({ message: "Product image is required" });
     }
 
-    if (!fs.existsSync(imagePath)) {
-      console.error(
-        `[CREATE PRODUCT] File does not exist at path: ${imagePath}`
-      );
-      return res
-        .status(400)
-        .json({ message: "Image file not found on server." });
+    // Check if file exists and is accessible
+    try {
+      await fs.promises.access(imagePath, fs.constants.R_OK);
+    } catch (error) {
+      console.error(`[CREATE PRODUCT] File access error: ${error.message}`);
+      return res.status(400).json({
+        message: "Image file is not accessible. Please try uploading again.",
+      });
     }
 
     // Upload image to Cloudinary
     console.log(`[CREATE PRODUCT] Uploading image: ${imagePath}`);
     const imageUpload = await uploadOnCloudinary(imagePath);
-    console.log(`[CREATE PRODUCT] Image upload response:`, imageUpload);
+
+    if (!imageUpload) {
+      console.error("[CREATE PRODUCT] Failed to upload image to Cloudinary");
+      return res.status(500).json({
+        message: "Failed to upload image. Please try again.",
+      });
+    }
+
+    console.log(
+      `[CREATE PRODUCT] Image upload successful: ${imageUpload.secure_url}`
+    );
+
+    // Create product with Cloudinary URL
     const newProduct = await Product.create({
       name,
       tagline,
       description,
       websiteUrl,
       category,
-      imageUrl: imageUpload?.secure_url || "",
+      imageUrl: imageUpload.secure_url,
       submittedBy: userId,
     });
 
-    if (!newProduct) {
-      console.error("[CREATE PRODUCT] Failed to create product");
-      return res.status(500).json({ message: "Failed to create product" });
+    // Clean up local file after successful upload
+    try {
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+        console.log(`[CREATE PRODUCT] Local file cleaned up: ${imagePath}`);
+      }
+    } catch (error) {
+      console.warn(
+        `[CREATE PRODUCT] Failed to clean up local file: ${error.message}`
+      );
+      // Don't return error here as the product was created successfully
     }
 
-    console.log(`[CREATE PRODUCT] Product created: ${newProduct._id}`);
-    return res
-      .status(201)
-      .json({ message: "Product created successfully", product: newProduct });
+    res.status(201).json({
+      success: true,
+      product: newProduct,
+    });
   } catch (error) {
-    console.error("[CREATE PRODUCT] Server error:", error);
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    console.error("[CREATE PRODUCT] Error:", error);
+
+    // Clean up local file if it exists
+    if (req.file?.path && fs.existsSync(req.file.path)) {
+      try {
+        fs.unlinkSync(req.file.path);
+        console.log(
+          `[CREATE PRODUCT] Cleaned up local file after error: ${req.file.path}`
+        );
+      } catch (cleanupError) {
+        console.warn(
+          `[CREATE PRODUCT] Failed to clean up local file after error: ${cleanupError.message}`
+        );
+      }
+    }
+
+    res.status(500).json({
+      message: "Failed to create product. Please try again.",
+    });
   }
 };
 
