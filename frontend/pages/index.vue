@@ -394,14 +394,17 @@ async function submitComment(productId) {
   const token = localStorage.getItem("token");
   const text = commentTexts.value[productId];
   if (!text) return;
-  await fetch(`https://product-hunt-d3ym.onrender.com/${productId}/comments`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ text }),
-  });
+  await fetch(
+    `https://product-hunt-d3ym.onrender.com/api/products/${productId}/comments`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ text }),
+    }
+  );
   commentTexts.value[productId] = "";
   // Optionally, refresh product/comments here
 }
