@@ -52,7 +52,7 @@
         </div>
         <button
           type="submit"
-          class="w-full bg-gradient-to-r from-blue-600 to-cyan-400 text-white py-3 px-4 rounded-xl hover:from-blue-700 hover:to-cyan-500 transition-all duration-300 disabled:opacity-50 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          class="w-full bg-gradient-to-r from-blue-600 to-cyan-400 text-white py-3 px-4 rounded-xl hover:from-blue-700 hover:to-cyan-500 transition-all duration-300 disabled:opacity-50 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
           :disabled="loading"
         >
           <span class="flex items-center justify-center">
@@ -86,14 +86,14 @@
           Don't have an account?
           <NuxtLink
             to="/auth/register"
-            class="text-blue-600 hover:text-blue-800 font-semibold hover:underline transition-colors duration-200"
+            class="text-blue-600 hover:text-blue-800 font-semibold hover:underline transition-colors duration-200 cursor-pointer"
             >Register</NuxtLink
           >
         </p>
         <div class="border-t border-gray-100 pt-4">
           <a
             href="#"
-            class="text-sm text-gray-500 hover:text-blue-600 transition-colors duration-200"
+            class="text-sm text-gray-500 hover:text-blue-600 transition-colors duration-200 cursor-pointer"
             >Forgot your password?</a
           >
         </div>
@@ -104,34 +104,34 @@
 
 <script setup>
 import { useToast } from "vue-toastification";
+import { useAuth } from "~/composables/useAuth";
 
 const toast = useToast();
+const { setAuth } = useAuth();
 const form = ref({
   email: "",
   password: "",
 });
 
 const loading = ref(false);
-const isAuthenticated = useState("isAuthenticated");
+const error = ref(null);
 
 async function handleSubmit() {
   // Validate form
   if (!form.value.email || !form.value.password) {
-    toast.warning("Please fill in all fields");
+    error.value = "Please fill in all fields";
     return;
   }
 
   // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(form.value.email)) {
-    toast.warning("Please enter a valid email address");
+    error.value = "Please enter a valid email address";
     return;
   }
 
   try {
     loading.value = true;
-    toast.info("Logging in...", { timeout: 2000 });
-
     const response = await fetch("http://localhost:5000/api/auth/login", {
       method: "POST",
       headers: {
@@ -146,27 +146,24 @@ async function handleSubmit() {
       throw new Error(data.message);
     }
 
-    // Store token and update auth state
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("role", data.role);
-    isAuthenticated.value = true;
+    // Set auth state using composable
+    setAuth(data);
 
-    toast.success("Login successful! Welcome back!", {
+    // Show success toast and redirect
+    toast.success("Login successful!", {
       timeout: 2000,
       onClose: () => {
-        // Redirect to home page after toast closes
-        window.location.href = "/";
         navigateTo("/");
       },
     });
   } catch (error) {
     console.error("Login error:", error);
     if (error.message.includes("Invalid credentials")) {
-      toast.error("Invalid email or password. Please try again.");
+      error.value = "Invalid email or password. Please try again.";
     } else if (error.message.includes("User not found")) {
-      toast.error("No account found with this email. Please register first.");
+      error.value = "No account found with this email. Please register first.";
     } else {
-      toast.error(error.message || "Login failed. Please try again.");
+      error.value = error.message || "Login failed. Please try again.";
     }
   } finally {
     loading.value = false;

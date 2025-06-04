@@ -72,29 +72,123 @@
             </NuxtLink>
           </template>
           <template v-else>
-            <div class="relative group cursor-pointer">
-              <span
-                class="inline-flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 font-bold mr-2 transform hover:scale-105 transition-all duration-200 hover:shadow-md cursor-pointer"
+            <div class="flex items-center gap-2">
+              <div
+                class="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold"
+                :class="
+                  userRole === 'admin'
+                    ? 'bg-purple-100 text-purple-800'
+                    : 'bg-blue-100 text-blue-800'
+                "
               >
-                <svg
-                  width="16"
-                  height="16"
-                  lg:width="20"
-                  lg:height="20"
-                  fill="currentColor"
-                  class="mx-auto group-hover:animate-pulse"
+                <span
+                  class="w-2 h-2 rounded-full"
+                  :class="
+                    userRole === 'admin' ? 'bg-purple-500' : 'bg-blue-500'
+                  "
+                ></span>
+                {{ userRole === "admin" ? "Admin" : "User" }}
+              </div>
+              <div class="relative profile-dropdown">
+                <button
+                  @click="toggleProfile"
+                  class="flex items-center gap-2 p-1 rounded-full hover:bg-gray-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
-                  <circle cx="10" cy="7" r="4" />
-                  <path d="M2 18c0-3.3 3.6-6 8-6" />
-                </svg>
-              </span>
+                  <div class="relative">
+                    <div
+                      class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold transform hover:scale-105 transition-all duration-200"
+                    >
+                      <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                      </svg>
+                    </div>
+                    <div
+                      class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-400 border-2 border-white"
+                    ></div>
+                  </div>
+                </button>
+
+                <Transition
+                  enter-active-class="transition duration-200 ease-out"
+                  enter-from-class="transform scale-95 opacity-0"
+                  enter-to-class="transform scale-100 opacity-100"
+                  leave-active-class="transition duration-150 ease-in"
+                  leave-from-class="transform scale-100 opacity-100"
+                  leave-to-class="transform scale-95 opacity-0"
+                >
+                  <div
+                    v-if="isProfileOpen"
+                    class="absolute right-0 mt-2 w-48 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                  >
+                    <div class="py-1">
+                      <div class="px-4 py-2 border-b border-gray-100">
+                        <p class="text-sm font-medium text-gray-900">
+                          Welcome!
+                        </p>
+                        <p class="text-xs text-gray-500 truncate">
+                          {{
+                            userRole === "admin"
+                              ? "Administrator"
+                              : "Regular User"
+                          }}
+                        </p>
+                      </div>
+
+                      <NuxtLink
+                        to="/profile"
+                        class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors duration-200"
+                        @click="isProfileOpen = false"
+                      >
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                        Profile
+                      </NuxtLink>
+
+                      <button
+                        @click="handleLogout"
+                        class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
+                      >
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                          />
+                        </svg>
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                </Transition>
+              </div>
             </div>
-            <button
-              @click="logout"
-              class="px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg text-sm lg:text-base font-semibold bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300 hover:shadow-md transition-all duration-200 active:scale-95 cursor-pointer"
-            >
-              Logout
-            </button>
           </template>
         </div>
 
@@ -132,31 +226,82 @@
             </template>
             <template v-else>
               <div class="flex items-center gap-2 px-3 py-2">
-                <span
-                  class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 font-bold"
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold"
+                  :class="
+                    userRole === 'admin'
+                      ? 'bg-purple-100 text-purple-800'
+                      : 'bg-blue-100 text-blue-800'
+                  "
                 >
-                  <svg
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    class="mx-auto"
+                  <span
+                    class="w-2 h-2 rounded-full"
+                    :class="
+                      userRole === 'admin' ? 'bg-purple-500' : 'bg-blue-500'
+                    "
+                  ></span>
+                  {{ userRole === "admin" ? "Admin" : "User" }}
+                </div>
+                <div class="flex-1 flex items-center gap-2">
+                  <div
+                    class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white"
                   >
-                    <circle cx="10" cy="7" r="4" />
-                    <path d="M2 18c0-3.3 3.6-6 8-6" />
-                  </svg>
-                </span>
-                <button
-                  @click="logout"
-                  class="flex-1 px-3 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300 transition-all duration-200"
-                >
-                  Logout
-                </button>
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </div>
+                  <button
+                    @click="handleLogout"
+                    class="flex-1 px-3 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-red-50 to-red-100 text-red-600 hover:from-red-100 hover:to-red-200 transition-all duration-200"
+                  >
+                    Logout
+                  </button>
+                </div>
               </div>
             </template>
           </div>
         </div>
       </nav>
     </header>
+
+    <!-- Welcome Banner for Authenticated Users -->
+    <div
+      v-if="isAuthenticated"
+      class="bg-gradient-to-r from-blue-50 to-indigo-50 border-b"
+    >
+      <div class="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">👋</span>
+            <p class="text-sm text-gray-600">
+              Welcome back! You are logged in as a
+              <span
+                class="font-semibold"
+                :class="
+                  userRole === 'admin' ? 'text-purple-600' : 'text-blue-600'
+                "
+              >
+                {{ userRole === "admin" ? "Administrator" : "Regular User" }}
+              </span>
+            </p>
+          </div>
+          <div class="text-xs text-gray-500">
+            {{ new Date().toLocaleDateString() }}
+          </div>
+        </div>
+      </div>
+    </div>
+
     <main
       class="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 lg:py-12"
     >
@@ -167,39 +312,57 @@
 
 <script setup>
 import { useRouter, useRoute } from "vue-router";
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { useAuth } from "~/composables/useAuth";
+import { useToast } from "vue-toastification";
 
 const router = useRouter();
 const route = useRoute();
 const isMobileMenuOpen = ref(false);
-
-const isAuthenticated = useState("isAuthenticated", () => {
-  if (process.client) {
-    return !!localStorage.getItem("token");
-  }
-  return false;
-});
-const role = ref("");
-if (process.client) {
-  role.value = localStorage.getItem("role") || "";
-}
+const isProfileOpen = ref(false);
+const toast = useToast();
+const { isAuthenticated, userRole, clearAuth, initAuth } = useAuth();
 
 const navigation = computed(() => {
   const nav = [{ name: "Home", path: "/" }];
-  if (role.value === "admin") {
+  if (userRole.value === "admin") {
     nav.push({ name: "Submit", path: "/submit" });
   }
   return nav;
 });
 
-const logout = () => {
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+// Toggle profile dropdown
+const toggleProfile = () => {
+  isProfileOpen.value = !isProfileOpen.value;
+};
+
+// Handle click outside
+const handleClickOutside = (event) => {
+  const dropdown = document.querySelector(".profile-dropdown");
+  if (dropdown && !dropdown.contains(event.target)) {
+    isProfileOpen.value = false;
   }
-  isAuthenticated.value = false;
-  role.value = "";
+};
+
+// Handle logout
+const handleLogout = () => {
+  clearAuth();
+  toast.success("Logged out successfully! See you soon!", {
+    position: "top-right",
+    timeout: 3000,
+    closeOnClick: true,
+    pauseOnFocusLoss: true,
+    pauseOnHover: true,
+    draggable: true,
+    draggablePercent: 0.6,
+    showCloseButtonOnHover: false,
+    hideProgressBar: false,
+    closeButton: "button",
+    icon: true,
+    rtl: false,
+  });
   isMobileMenuOpen.value = false;
+  isProfileOpen.value = false;
   router.push("/auth/login");
 };
 
@@ -229,6 +392,16 @@ if (
     router.push("/");
   }
 }
+
+// Initialize auth state on component mount
+onMounted(() => {
+  initAuth();
+  document.addEventListener("click", handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 </script>
 
 <style scoped>
@@ -259,5 +432,57 @@ button,
 .mobile-menu-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+/* Add smooth transitions for dropdown */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* Add hover effect for profile icon */
+.profile-icon {
+  transition: transform 0.2s ease;
+}
+
+.profile-icon:hover {
+  transform: scale(1.05);
+}
+
+/* Profile dropdown styles */
+.profile-dropdown {
+  position: relative;
+}
+
+/* Ensure dropdown is above other elements */
+.profile-dropdown > div:last-child {
+  z-index: 50;
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Hover effects */
+.hover\:scale-105:hover {
+  transform: scale(1.05);
+}
+
+/* Focus styles */
+.focus\:ring-2:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.focus\:ring-offset-2:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5), 0 0 0 4px white;
 }
 </style>

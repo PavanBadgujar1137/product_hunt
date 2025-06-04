@@ -84,7 +84,7 @@
         </div>
         <button
           type="submit"
-          class="w-full bg-gradient-to-r from-blue-600 to-cyan-400 text-white py-3 px-4 rounded-xl hover:from-blue-700 hover:to-cyan-500 transition-all duration-300 disabled:opacity-50 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          class="w-full bg-gradient-to-r from-blue-600 to-cyan-400 text-white py-3 px-4 rounded-xl hover:from-blue-700 hover:to-cyan-500 transition-all duration-300 disabled:opacity-50 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
           :disabled="loading"
         >
           <span class="flex items-center justify-center">
@@ -118,7 +118,7 @@
           Already have an account?
           <NuxtLink
             to="/auth/login"
-            class="text-blue-600 hover:text-blue-800 font-semibold hover:underline transition-colors duration-200"
+            class="text-blue-600 hover:text-blue-800 font-semibold hover:underline transition-colors duration-200 cursor-pointer"
             >Login</NuxtLink
           >
         </p>
@@ -127,13 +127,13 @@
             By registering, you agree to our
             <a
               href="#"
-              class="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+              class="text-blue-600 hover:text-blue-800 transition-colors duration-200 cursor-pointer"
               >Terms</a
             >
             and
             <a
               href="#"
-              class="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+              class="text-blue-600 hover:text-blue-800 transition-colors duration-200 cursor-pointer"
               >Privacy Policy</a
             >
           </p>

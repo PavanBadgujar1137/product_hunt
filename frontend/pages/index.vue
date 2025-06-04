@@ -305,13 +305,14 @@ import { useAuth } from "~/composables/useAuth";
 
 const { products, loading, error, fetchProducts, resetProducts } =
   useProducts();
-const isAuthenticated = useState("isAuthenticated");
+const { isAuthenticated, userId: authUserId, userRole } = useAuth();
 const userId = ref(null);
 const role = ref("");
 
 onMounted(() => {
   if (process.client) {
-    role.value = localStorage.getItem("role") || "";
+    role.value = userRole.value || "";
+    userId.value = authUserId.value;
   }
 });
 
@@ -375,9 +376,7 @@ async function handleUpvote(productId) {
 // Fetch user ID on mount if authenticated
 onMounted(async () => {
   if (isAuthenticated.value) {
-    const { user } = useAuth();
-    await user.value?.fetchUser();
-    userId.value = user.value?._id;
+    userId.value = authUserId.value;
   }
 });
 
