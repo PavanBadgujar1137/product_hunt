@@ -1,5 +1,5 @@
-import { ref } from 'vue';
-import axios from 'axios';
+import { ref } from "vue";
+import axios from "axios";
 
 export const useProducts = () => {
   const products = ref([]);
@@ -8,28 +8,35 @@ export const useProducts = () => {
   const page = ref(1);
   const hasMore = ref(true);
 
-  const fetchProducts = async (category = '', sort = '-createdAt', search = '') => {
+  const fetchProducts = async (
+    category = "",
+    sort = "-createdAt",
+    search = ""
+  ) => {
     try {
       if (!hasMore.value || loading.value) return;
 
       loading.value = true;
       const query = new URLSearchParams();
-      if (category) query.append('category', category);
-      if (sort) query.append('sort', sort);
-      if (search) query.append('search', search);
-      query.append('page', page.value.toString());
-      query.append('limit', '9');
+      if (category) query.append("category", category);
+      if (sort) query.append("sort", sort);
+      if (search) query.append("search", search);
+      query.append("page", page.value.toString());
+      query.append("limit", "9");
 
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:5000/api/products`,
+        `https://product-hunt-d3ym.onrender.com/api/products`,
         {
-          headers: token ? { Authorization: `Bearer ${token}` } : {}
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         }
       );
 
       const data = response.data;
-      products.value = page.value === 1 ? data.products : [...products.value, ...data.products];
+      products.value =
+        page.value === 1
+          ? data.products
+          : [...products.value, ...data.products];
       hasMore.value = data.hasMore;
       page.value++;
     } catch (err) {
@@ -51,6 +58,6 @@ export const useProducts = () => {
     error,
     hasMore,
     fetchProducts,
-    resetProducts
+    resetProducts,
   };
 };

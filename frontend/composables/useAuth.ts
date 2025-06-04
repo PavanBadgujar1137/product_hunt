@@ -1,18 +1,18 @@
-import { ref } from 'vue';
+import { ref } from "vue";
 
 export const useAuth = () => {
-  const token = ref(localStorage.getItem('token'));
+  const token = ref(localStorage.getItem("token"));
   const user = ref(null);
   const loading = ref(false);
 
   const setToken = (newToken: string) => {
     token.value = newToken;
-    localStorage.setItem('token', newToken);
+    localStorage.setItem("token", newToken);
   };
 
   const clearToken = () => {
     token.value = null;
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
   };
 
   const fetchUser = async () => {
@@ -20,17 +20,20 @@ export const useAuth = () => {
 
     try {
       loading.value = true;
-      const response = await fetch('http://localhost:5000/api/auth/profile', {
-        headers: {
-          Authorization: `Bearer ${token.value}`
+      const response = await fetch(
+        "https://product-hunt-d3ym.onrender.com/api/auth/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token.value}`,
+          },
         }
-      });
+      );
 
-      if (!response.ok) throw new Error('Failed to fetch user');
+      if (!response.ok) throw new Error("Failed to fetch user");
 
       user.value = await response.json();
     } catch (error) {
-      console.error('Error fetching user:', error);
+      console.error("Error fetching user:", error);
       clearToken();
     } finally {
       loading.value = false;
@@ -40,7 +43,7 @@ export const useAuth = () => {
   const logout = () => {
     clearToken();
     user.value = null;
-    window.location.href = '/auth/login';
+    window.location.href = "/auth/login";
   };
 
   return {
@@ -50,6 +53,6 @@ export const useAuth = () => {
     setToken,
     clearToken,
     fetchUser,
-    logout
+    logout,
   };
 };

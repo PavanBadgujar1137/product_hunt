@@ -253,11 +253,14 @@ async function fetchAnalytics() {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Authentication required");
 
-    const response = await fetch("http://localhost:5000/api/admin/analytics", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      "https://product-hunt-d3ym.onrender.com/api/admin/analytics",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!response.ok) throw new Error("Failed to fetch analytics");
     analytics.value = await response.json();
@@ -274,7 +277,7 @@ async function handleDelete(productId) {
     if (!token) throw new Error("Authentication required");
 
     const response = await fetch(
-      `http://localhost:5000/api/products/${productId}`,
+      `https://product-hunt-d3ym.onrender.com/api/products/${productId}`,
       {
         method: "DELETE",
         headers: {
@@ -334,11 +337,14 @@ onMounted(async () => {
 async function fetchDashboardData() {
   try {
     loading.value = true;
-    const response = await fetch("http://localhost:5000/api/admin/dashboard", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    const response = await fetch(
+      "https://product-hunt-d3ym.onrender.com/api/admin/dashboard",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
 
     if (!response.ok) throw new Error("Failed to fetch dashboard data");
 

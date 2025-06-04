@@ -132,13 +132,16 @@ async function handleSubmit() {
 
   try {
     loading.value = true;
-    const response = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form.value),
-    });
+    const response = await fetch(
+      "https://product-hunt-d3ym.onrender.com/api/auth/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form.value),
+      }
+    );
 
     const data = await response.json();
 

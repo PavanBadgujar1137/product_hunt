@@ -337,7 +337,7 @@ async function handleSubmit() {
 
     // POST to backend
     const response = await axios.post(
-      "http://localhost:5000/api/products",
+      "https://product-hunt-d3ym.onrender.com/api/products",
       formData,
       {
         headers: {
@@ -376,7 +376,9 @@ async function handleSubmit() {
 // Fetch products for preview
 async function fetchProducts() {
   try {
-    const res = await axios.get("http://localhost:5000/api/products");
+    const res = await axios.get(
+      "https://product-hunt-d3ym.onrender.com/api/products"
+    );
     products.value = res.data.products || res.data;
   } catch (e) {
     // ignore preview errors

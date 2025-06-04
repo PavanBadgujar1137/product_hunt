@@ -177,12 +177,15 @@ async function handleSubmit() {
   error.value = "";
   try {
     loading.value = true;
-    await axios.post("http://localhost:5000/api/auth/register", {
-      username: form.value.username,
-      email: form.value.email,
-      password: form.value.password,
-      role: form.value.role,
-    });
+    await axios.post(
+      "https://product-hunt-d3ym.onrender.com/api/auth/register",
+      {
+        username: form.value.username,
+        email: form.value.email,
+        password: form.value.password,
+        role: form.value.role,
+      }
+    );
     toast.success("Registration successful! Please login to continue.");
     router.push("/auth/login");
   } catch (err) {

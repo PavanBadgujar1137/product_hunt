@@ -313,7 +313,7 @@ const handleUpvote = async () => {
   try {
     isLoading.value = true;
     const response = await axios.post(
-      `http://localhost:5000/api/products/${product.value._id}/upvote`,
+      `https://product-hunt-d3ym.onrender.com/api/products/${product.value._id}/upvote`,
       {},
       {
         headers: {
@@ -347,7 +347,9 @@ const handleUpvote = async () => {
 onMounted(async () => {
   const { slug } = route.params;
   try {
-    const res = await axios.get(`http://localhost:5000/api/products/${slug}`);
+    const res = await axios.get(
+      `https://product-hunt-d3ym.onrender.com/api/products/${slug}`
+    );
     product.value = res.data.product || res.data;
     // Check if current user has upvoted
     const userId = localStorage.getItem("userId");

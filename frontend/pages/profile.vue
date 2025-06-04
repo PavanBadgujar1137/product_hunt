@@ -259,7 +259,7 @@ const fetchUserData = async () => {
   try {
     loading.value = true;
     const response = await fetch(
-      `http://localhost:5000/api/users/${userId.value}`,
+      `https://product-hunt-d3ym.onrender.com/api/users/${userId.value}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

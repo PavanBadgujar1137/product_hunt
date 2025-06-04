@@ -6,7 +6,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: process.env.API_BASE || "http://localhost:5000/api",
+      apiBase:
+        process.env.API_BASE || "https://product-hunt-d3ym.onrender.com/api",
     },
   },
 

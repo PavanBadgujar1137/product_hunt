@@ -197,48 +197,6 @@
                 "
                 class="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 active:from-blue-200 active:to-indigo-200 border border-blue-200/50 shadow-sm hover:shadow-md transition-all duration-300 font-medium text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 text-xs sm:text-sm relative overflow-hidden group"
               >
-                <!-- Upvote Icon -->
-                <div class="relative flex items-center gap-1 sm:gap-1.5">
-                  <svg
-                    width="14"
-                    height="14"
-                    sm:width="16"
-                    sm:height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    class="transition-all duration-300 transform"
-                    :class="{
-                      'rotate-180 scale-110': product.upvotes.includes(userId),
-                      'group-hover:scale-110':
-                        !product.upvotes.includes(userId),
-                    }"
-                  >
-                    <path
-                      d="M12 4l6 12H6l6-12z"
-                      :fill="
-                        product.upvotes.includes(userId) ? '#2563eb' : '#60a5fa'
-                      "
-                      class="transition-colors duration-300"
-                    />
-                  </svg>
-                  <span
-                    class="relative font-medium transition-all duration-300"
-                    :class="{
-                      'scale-110 text-blue-700':
-                        product.upvotes.includes(userId),
-                      'text-blue-600': !product.upvotes.includes(userId),
-                    }"
-                  >
-                    {{ product.upvoteCount }}
-                  </span>
-                </div>
-              </button>
-
-              <!-- Comment Button -->
-              <button
-                @click.stop
-                class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200/50 shadow-sm hover:shadow-md transition-all duration-300 font-medium text-gray-600 hover:text-gray-700 transform hover:scale-105 text-xs sm:text-sm"
-              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="h-3.5 w-3.5 sm:h-4 sm:w-4"
@@ -247,12 +205,50 @@
                 >
                   <path
                     fill-rule="evenodd"
-                    d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+                    d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
                     clip-rule="evenodd"
                   />
                 </svg>
-                <span>{{ product.comments?.length || 0 }}</span>
+                <span>{{ product.upvoteCount }}</span>
               </button>
+
+              <!-- Admin Actions -->
+              <div v-if="role === 'admin'" class="flex items-center gap-2">
+                <button
+                  @click.stop="handleEdit(product)"
+                  class="flex items-center gap-1 px-2 py-1 rounded-lg bg-yellow-50 hover:bg-yellow-100 border border-yellow-200/50 shadow-sm hover:shadow-md transition-all duration-300 font-medium text-yellow-700 transform hover:scale-105 text-xs sm:text-sm"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-3.5 w-3.5 sm:h-4 sm:w-4"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
+                    />
+                  </svg>
+                  Edit
+                </button>
+                <button
+                  @click.stop="handleDelete(product._id)"
+                  class="flex items-center gap-1 px-2 py-1 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200/50 shadow-sm hover:shadow-md transition-all duration-300 font-medium text-red-700 transform hover:scale-105 text-xs sm:text-sm"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-3.5 w-3.5 sm:h-4 sm:w-4"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  Delete
+                </button>
+              </div>
             </div>
 
             <a
@@ -335,7 +331,7 @@ async function handleUpvote(productId) {
   try {
     isLoading.value[productId] = true;
     const res = await fetch(
-      `http://localhost:5000/api/products/${productId}/upvote`,
+      `https://product-hunt-d3ym.onrender.com/api/products/${productId}/upvote`,
       {
         method: "POST",
         headers: {
@@ -398,7 +394,7 @@ async function submitComment(productId) {
   const token = localStorage.getItem("token");
   const text = commentTexts.value[productId];
   if (!text) return;
-  await fetch(`http://localhost:5000/${productId}/comments`, {
+  await fetch(`https://product-hunt-d3ym.onrender.com/${productId}/comments`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -419,6 +415,49 @@ const filteredProducts = computed(() => {
 function navigateToProduct(slug) {
   navigateTo(`/products/${slug}`);
 }
+
+const handleEdit = (product) => {
+  // Navigate to edit page with product data
+  navigateTo({
+    path: `/products/edit/${product._id}`,
+    query: {
+      name: product.name,
+      tagline: product.tagline,
+      description: product.description,
+      websiteUrl: product.websiteUrl,
+      category: product.category,
+      imageUrl: product.imageUrl,
+    },
+  });
+};
+
+const handleDelete = async (productId) => {
+  if (!confirm("Are you sure you want to delete this product?")) return;
+
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Authentication required");
+
+    const response = await fetch(
+      `https://product-hunt-d3ym.onrender.com/api/products/${productId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed to delete product");
+
+    // Remove product from local state
+    products.value = products.value.filter((p) => p._id !== productId);
+    toast.success("Product deleted successfully");
+  } catch (error) {
+    console.error("Delete error:", error);
+    toast.error(error.message || "Failed to delete product");
+  }
+};
 </script>
 
 <style scoped>

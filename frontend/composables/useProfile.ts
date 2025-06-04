@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref } from "vue";
 
 export const useProfile = () => {
   const submittedProducts = ref([]);
@@ -9,16 +9,19 @@ export const useProfile = () => {
   const fetchUserProducts = async (userId: string) => {
     try {
       loading.value = true;
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('Authentication required');
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Authentication required");
 
-      const response = await fetch(`http://localhost:5000/api/auth/profile/${userId}/products`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await fetch(
+        `https://product-hunt-d3ym.onrender.com/api/auth/profile/${userId}/products`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
-      if (!response.ok) throw new Error('Failed to fetch user products');
+      if (!response.ok) throw new Error("Failed to fetch user products");
 
       const data = await response.json();
       submittedProducts.value = data.submitted;
@@ -35,6 +38,6 @@ export const useProfile = () => {
     upvotedProducts,
     loading,
     error,
-    fetchUserProducts
+    fetchUserProducts,
   };
 };
