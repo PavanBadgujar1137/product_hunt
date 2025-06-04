@@ -205,10 +205,100 @@ const addComment = async (req, res) => {
   }
 };
 
+// @desc    Update product
+// @route   PUT /api/products/:id
+// @access  Private (Admin only)
+const updateProduct = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    console.log(`[UPDATE PRODUCT] User: ${userId}, Role: ${req.user.role}`);
+
+    if (req.user.role !== "admin") {
+      console.warn(`[UPDATE PRODUCT] Forbidden: User ${userId} is not admin`);
+      return res
+        .status(403)
+        .json({ message: "Only admins can update products." });
+    }
+
+    const { name, tagline, description, websiteUrl, category } = req.body;
+    const productId = req.params.id;
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Update fields if provided
+    if (name) product.name = name;
+    if (tagline) product.tagline = tagline;
+    if (description) product.description = description;
+    if (websiteUrl) product.websiteUrl = websiteUrl;
+    if (category) product.category = category;
+
+    // Handle image update if new image is provided
+    if (req.file?.path) {
+      try {
+        const imageUpload = await uploadOnCloudinary(req.file.path);
+        if (imageUpload) {
+          product.imageUrl = imageUpload.secure_url;
+        }
+        // Clean up local file
+        fs.unlinkSync(req.file.path);
+      } catch (error) {
+        console.error("[UPDATE PRODUCT] Image upload error:", error);
+        return res.status(500).json({ message: "Failed to upload new image" });
+      }
+    }
+
+    await product.save();
+    res.json({
+      success: true,
+      message: "Product updated successfully",
+      product,
+    });
+  } catch (error) {
+    console.error("[UPDATE PRODUCT] Error:", error);
+    res.status(500).json({ message: "Failed to update product" });
+  }
+};
+
+// @desc    Delete product
+// @route   DELETE /api/products/:id
+// @access  Private (Admin only)
+const deleteProduct = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    console.log(`[DELETE PRODUCT] User: ${userId}, Role: ${req.user.role}`);
+
+    if (req.user.role !== "admin") {
+      console.warn(`[DELETE PRODUCT] Forbidden: User ${userId} is not admin`);
+      return res
+        .status(403)
+        .json({ message: "Only admins can delete products." });
+    }
+
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    console.error("[DELETE PRODUCT] Error:", error);
+    res.status(500).json({ message: "Failed to delete product" });
+  }
+};
+
 module.exports = {
   createProduct,
   getProducts,
   getProductBySlug,
   toggleUpvote,
   addComment,
+  updateProduct,
+  deleteProduct,
 };
